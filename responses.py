@@ -34,7 +34,36 @@ def get_response(message: str, movies: dict, username: str) -> str:
         return "Movie added to the Watchlist"
     
 
-    if(username != "diogopedro" or username != "errad0"):
+
+    if p_message == "!rndmov" and len(sp_message) == 2:
+        if(len(movies["wl"]) <= int(sp_message[1])):
+            st = "**Randomlist**\n```"
+            for mov in movies["wl"].items():
+                st += f"{mov[0]}\n"
+            st += "```"
+            return st
+        
+        random_items = random.sample(list(movies["wl"].items()), int(sp_message[1]))
+        print(random_items)
+        index = 1
+        st = "**Randomlist**\n```"
+        for mov in random_items:
+            st += f"{mov[0]}\n"
+        st += "```"
+        return st
+
+
+    if p_message == "!help":
+        return """**Commands**```!wl                             - returns the list of movies to watch
+!sl                             - return the list of movies already seen
+!wladd {movie name} {imdb link} - adds a movie to the watchlist
+!wlremove {movie name}          - removes a movie from the watchlist
+!sladd {movie name} {rating}    - adds a movie to the seenlist
+!slremove {movie name}          - removes a movie from the seenlist
+!rndmov {int}                    - gives a random list of x movies from the Watchlist```"""
+    
+
+    if(not (username == "diogopedro" or username == "errad0")):
         return "You don't have permission for that"
     
 
@@ -65,32 +94,5 @@ def get_response(message: str, movies: dict, username: str) -> str:
         del movies["sl"][sp_message[1]]
         return "Movie removed from the seenlist"
     
-
-    if p_message == "!rndmov" and len(sp_message) == 2:
-        if(len(movies["wl"]) <= int(sp_message[1])):
-            st = "**Randomlist**\n```"
-            for mov in movies["wl"].items():
-                st += f"{mov[0]}\n"
-            st += "```"
-            return st
-        
-        random_items = random.sample(list(movies["wl"].items()), int(sp_message[1]))
-        print(random_items)
-        index = 1
-        st = "**Randomlist**\n```"
-        for mov in random_items:
-            st += f"{mov[0]}\n"
-        st += "```"
-        return st
-
-
-    if p_message == "!help":
-        return """**Commands**```!wl                             - returns the list of movies to watch
-!sl                             - return the list of movies already seen
-!wladd {movie name} {imdb link} - adds a movie to the watchlist
-!wlremove {movie name}          - removes a movie from the watchlist
-!sladd {movie name} {rating}    - adds a movie to the seenlist
-!slremove {movie name}          - removes a movie from the seenlist
-!rndmov {int}                    - gives a random list of x movies from the Watchlist```"""
 
     return "Use !help"
