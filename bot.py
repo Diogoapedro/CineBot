@@ -3,9 +3,9 @@ import responses
 import json
 from os.path import exists
 
-async def send_message(message, movies, user_message, is_private):
+async def send_message(message, movies, username, user_message, is_private):
     try:
-        response = responses.get_response(user_message, movies)
+        response = responses.get_response(user_message, movies, username)
         await message.author.send(response) if is_private else await message.channel.send(response)
         f = open("movies.json", "w+")
         json.dump(movies, f, indent=4)
@@ -59,8 +59,8 @@ def run_discord_bot():
 
         if user_message[0:2] == 'p!':
             user_message = user_message[1:]
-            await send_message(message, movies, user_message, is_private=True)
+            await send_message(message, movies, username, user_message, is_private=True)
         elif user_message[0] == '!':
-            await send_message(message, movies, user_message, is_private=False)
+            await send_message(message, movies, username, user_message, is_private=False)
 
     client.run(token)
