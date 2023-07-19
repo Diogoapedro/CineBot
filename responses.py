@@ -7,7 +7,7 @@ def get_response(message: str, movies: dict, username: str) -> str:
     p_message = sp_message[0].lower()
 
     if p_message == "!wl" and len(sp_message) == 1:
-        st = "**Watchlist**\n```"
+        st = "**Watchlist**```\n"
         for mov in movies["wl"].items():
             st += f"{mov[0]}\n"
         st += "```"
@@ -15,7 +15,7 @@ def get_response(message: str, movies: dict, username: str) -> str:
     
 
     if p_message == "!sl" and len(sp_message) == 1:
-        st = "**Seenlist**\n```"
+        st = "**Seenlist**```\n"
         for mov in movies["sl"].items():
             if(mov[1] == ""):
                 st += f"{mov[0]}\n"
