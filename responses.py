@@ -1,15 +1,97 @@
+import random
 
 
-def get_response(message: str) -> str:
-    p_message = message.lower()
+#movies={wl: {nome: imdb_link}, sl : {nome_filme: rating} }
+def get_response(message: str, movies: dict) -> str:
+    sp_message = message.split(" ")
+    p_message = sp_message[0].lower()
 
-    if p_message == "hello":
-        return "Hey there"
+    if p_message == "!wl" and len(sp_message) == 1:
+        st = "**Watchlist**\n```"
+        for mov in movies["wl"].items():
+            if(mov[1] == ""):
+                st += f"{mov[0]}\n"
+            else:
+                st += f"{mov[0]} - {mov[1]}\n"
+        st += "```"
+        return st
     
-    if p_message == "errado":
-        return "Chão"
+
+    if p_message == "!sl":
+        st = "**Seenlist**\n```"
+        for mov in movies["sl"].items():
+            if(mov[1] == ""):
+                st += f"{mov[0]}\n"
+            else:
+                st += f"{mov[0]} - {mov[1]}\n"
+        st += "```"
+        return st
     
+
+    if p_message == "!wladd" and (len(sp_message) == 2 or len(sp_message) == 3):
+        if(len(sp_message) == 3):
+            movies["wl"][sp_message[1]] = sp_message[2]
+        else:
+            if(movies["wl"].get([sp_message[1]]) == None):
+                movies["wl"][sp_message[1]] = ""
+        return "Movie added to the Watchlist"
+    
+
+    #Case sensitive
+    if p_message == "!wlremove" and len(sp_message) == 2:
+        if(movies["wl"].get(sp_message[1]) == None):
+            return "Movie not in list, check for case sensitive"
+        del movies["wl"][sp_message[1]]
+        return "Movie removed from the Watchlist"
+    
+
+    if p_message == "!sladd" and (len(sp_message) == 2 or len(sp_message) == 3):
+        if(len(sp_message) == 3):
+            movies["sl"][sp_message[1]] = sp_message[2]
+        else:
+            if(movies["sl"].get([sp_message[1]]) == None):
+                movies["sl"][sp_message[1]] = ""
+        return "Movie added to the seenlist"
+
+
+    #Case sensitive
+    if p_message == "!slremove" and len(sp_message) == 2:
+        if(movies["sl"].get(sp_message[1]) == None):
+            return "Movie not in list, check for case sensitive"
+        del movies["sl"][sp_message[1]]
+        return "Movie removed from the seenlist"
+    
+
+    if p_message == "!rndmov" and len(sp_message) == 2:
+        if(len(movies["wl"]) <= int(sp_message[1])):
+            st = "**Randomlist**\n```"
+            for mov in movies["wl"].items():
+                if(mov[1] == ""):
+                    st += f"{mov[0]}\n"
+                else:
+                    st += f"{mov[0]} - {mov[1]}\n"
+            st += "```"
+            return st
+        
+        random_items = random.sample(list(movies["wl"].items()), int(sp_message[1]))
+        print(random_items)
+        st = "**Randomlist**\n```"
+        for mov in random_items:
+            if(mov[1] == ""):
+                st += f"{mov[0]}\n"
+            else:
+                st += f"{mov[0]} - {mov[1]}\n"
+        st += "```"
+        return st
+
+
     if p_message == "!help":
-        return "`This is a help message that you can modify.`"
-    
-    return "Wtf did you just said?"
+        return """**Commands**```!wl                             - returns the list of movies to watch
+!sl                             - return the list of movies already seen
+!wladd {movie name} {imdb link} - adds a movie to the watchlist
+!wlremove {movie name}          - removes a movie from the watchlist
+!sladd {movie name} {rating}    - adds a movie to the seenlist
+!slremove {movie name}          - removes a movie from the seenlist
+!rndmv {int}                    - gives a random list of x movies from the Watchlist```"""
+
+    return "Use !help"
