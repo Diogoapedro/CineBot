@@ -1,8 +1,8 @@
 import random
 
-
 #movies={wl: {nome: imdb_link}, sl : {nome_filme: rating} }
 def get_response(message: str, movies: dict, username: str) -> str:
+    admin_users = ["diogopedro", "errad0"]
     sp_message = message.split(" ", 1)
     p_message = sp_message[0].lower()
 
@@ -67,25 +67,13 @@ def get_response(message: str, movies: dict, username: str) -> str:
         st += "```"
         print(st)
         return st
-
-
-    if p_message == "!help":
-        return """**Commands**```!wl                             - returns the list of movies to watch
-!sl                             - return the list of movies already seen
-!wlimdb {movie name}            - returns the imdb link of the movie
-!wladd {movie name} {imdb link} - adds a movie to the watchlist
-!wlremove {movie name}          - removes a movie from the watchlist
-!sladd {movie name} {rating}    - adds a movie to the seenlist
-!slremove {movie name}          - removes a movie from the seenlist
-!rndmov {int}                   - gives a random list of x movies from the Watchlist```"""
-    
-
-    if(not (username == "diogopedro" or username == "errad0")):
-        return "You don't have permission for that"
     
 
     #Case sensitive
     if p_message == "!wlremove" and len(sp_message) == 2:
+        if(not (username in admin_users)):
+            return "You don't have permission for that"
+        
         if(movies["wl"].get(sp_message[1]) == None):
             return "Movie not in list, check for case sensitive"
         del movies["wl"][sp_message[1]]
@@ -93,6 +81,9 @@ def get_response(message: str, movies: dict, username: str) -> str:
     
 
     if p_message == "!sladd" and (len(sp_message) == 2):
+        if(not (username in admin_users)):
+            return "You don't have permission for that"
+        
         x = sp_message[1].rsplit(" ", 1)
         st = sp_message[:1]
         st.extend(x)
@@ -112,10 +103,24 @@ def get_response(message: str, movies: dict, username: str) -> str:
 
     #Case sensitive
     if p_message == "!slremove" and len(sp_message) == 2:
+        if(not (username in admin_users)):
+            return "You don't have permission for that"
+        
         if(movies["sl"].get(sp_message[1]) == None):
             return "Movie not in list, check for case sensitive"
         del movies["sl"][sp_message[1]]
         return "Movie removed from the seenlist"
+    
+
+    if p_message == "!help":
+        return """**Commands**```!wl                             - returns the list of movies to watch
+!sl                             - return the list of movies already seen
+!wlimdb {movie name}            - returns the imdb link of the movie
+!wladd {movie name} {imdb link} - adds a movie to the watchlist
+!wlremove {movie name}          - removes a movie from the watchlist
+!sladd {movie name} {rating}    - adds a movie to the seenlist
+!slremove {movie name}          - removes a movie from the seenlist
+!rndmov {int}                   - gives a random list of x movies from the Watchlist```"""
     
 
     return "Use !help"
