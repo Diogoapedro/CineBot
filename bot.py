@@ -1,7 +1,9 @@
 import discord
 import responses
 import json
+from dotenv import load_dotenv
 from os.path import exists
+from os import getenv
 
 async def send_message(message, movies, username, user_message, is_private):
     try:
@@ -15,13 +17,9 @@ async def send_message(message, movies, username, user_message, is_private):
         print(e)
 
 def run_discord_bot():
-    keys_file  = open("info.txt", "r")
-    token = ""
-    for line in keys_file:
-        sp = line.split(" = ", 1)
-        if("TOKEN" in sp[0]):
-            token = sp[1]
-            break
+    # Loading the discord token
+    load_dotenv()
+    TOKEN = getenv("TOKEN")
 
     movies = dict() #movies={wl: {nome: imdb_link}, sl : {nome_filme: rating} }
     if(exists("movies.json")):
@@ -63,4 +61,4 @@ def run_discord_bot():
         elif user_message[0] == '!':
             await send_message(message, movies, username, user_message, is_private=False)
 
-    client.run(token)
+    client.run(TOKEN)

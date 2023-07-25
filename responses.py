@@ -3,8 +3,12 @@ import random
 #movies={wl: {nome: imdb_link}, sl : {nome_filme: rating} }
 def get_response(message: str, movies: dict, username: str) -> str:
     admin_users = ["diogopedro", "errad0"]
+    banned_users = []
     sp_message = message.split(" ", 1)
     p_message = sp_message[0].lower()
+
+    if(username in banned_users):
+        return "You have been banned"
 
     if p_message == "!wl" and len(sp_message) == 1:
         st = "**Watchlist**```\n"
@@ -89,7 +93,7 @@ def get_response(message: str, movies: dict, username: str) -> str:
         st.extend(x)
         print(st)
         if(len(st) == 3):
-            if(int(st[2]) <= 10 and int(st[2]) >= 0):
+            if(float(st[2]) <= 10 and float(st[2]) >= 0):
                 movies["sl"][st[1]] = st[2]
             else:
                 return "Invalid rating"
@@ -112,15 +116,68 @@ def get_response(message: str, movies: dict, username: str) -> str:
         return "Movie removed from the seenlist"
     
 
+    if p_message == "!selfsl" and len(sp_message) == 1:
+        st = "**Seenlist**```\n"
+        if(not movies.get(username)):
+            return "Your list is still empty"
+        for mov in movies[username].items():
+            if(mov[1] == ""):
+                st += f"{mov[0]}\n"
+            else:
+                st += f"{mov[0]} - {mov[1]}\n"
+        st += "```"
+        return st
+
+
+
+    if p_message == "!selfsladd" and (len(sp_message) == 2):
+        
+        x = sp_message[1].rsplit(" ", 1)
+        st = sp_message[:1]
+        st.extend(x)
+        print(st)
+
+        if(not movies.get(username)):
+            movies[username] = dict()
+
+        if(len(st) == 3):
+            if(float(st[2]) <= 10 and float(st[2]) >= 0):
+                movies[username][st[1]] = st[2]
+            else:
+                return "Invalid rating"
+        else:
+            print(1)
+            if(movies[username].get(st[1]) == None):
+                print(2)
+                movies[username][st[1]] = ""
+        return "Movie added to the seenlist"
+
+
+    #Case sensitive
+    if p_message == "!selfslremove" and len(sp_message) == 2:
+        
+        if(not movies.get(username)):
+            movies[username] = dict()
+
+        if(movies[username].get(sp_message[1]) == None):
+            return "Movie not in list, check for case sensitive"
+        del movies[username][sp_message[1]]
+        return "Movie removed from the seenlist"
+    
+    
+
     if p_message == "!help":
-        return """**Commands**```!wl                             - returns the list of movies to watch
-!sl                             - return the list of movies already seen
-!wlimdb {movie name}            - returns the imdb link of the movie
-!wladd {movie name} {imdb link} - adds a movie to the watchlist
-!wlremove {movie name}          - removes a movie from the watchlist
-!sladd {movie name} {rating}    - adds a movie to the seenlist
-!slremove {movie name}          - removes a movie from the seenlist
-!rndmov {int}                   - gives a random list of x movies from the Watchlist```"""
+        return """**Commands**```!wl                              - returns the list of movies to watch
+!sl                              - return the list of movies already seen
+!selfsl                          - return the list of movies already seen by the user
+!wlimdb {movie name}             - returns the imdb link of the movie
+!wladd {movie name} {imdb link}  - adds a movie to the watchlist
+!wlremove {movie name}           - removes a movie from the watchlist
+!sladd {movie name} {rating}     - adds a movie to the seenlist
+!slremove {movie name}           - removes a movie from the seenlist
+!selfsladd {movie name} {rating} - adds a movie to the user seenlist
+!selfslremove {movie name}       - removes a movie from the user seenlist
+!rndmov {int}                    - gives a random list of x movies from the Watchlist```"""
     
 
     return "Use !help"
