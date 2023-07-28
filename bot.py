@@ -5,7 +5,7 @@ from mov import movie
 from dotenv import load_dotenv
 from os import getenv
 
-async def send_message(message, movie_db: movie, username, user_message, is_private, restrict):
+async def send_message(message, movie_db: movie, username, user_message, is_private, restrict=None):
     try:
         response = responses.get_response(user_message, movie_db, username, restrict)
         movie_db.close()

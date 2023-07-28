@@ -169,9 +169,13 @@ class movie:
         if(not records):
             url = self.imdb.get_imdbURL(movie[0])
             self.newMovie(title, url)
-            
-        if(not self.checkRelation(user, title, relation)):
+        
+        rela = self.checkRelation(user, title, relation)
+        print(rela)
+        if(not rela[0]):
             self.addRelation(user, title, relation, rating)
+            if(rela[1] == "seen"):
+                self.removeRelation(user, title)
         else:
             self.updateRelation(user, title, relation, rating)
         
@@ -191,10 +195,13 @@ class movie:
 
 
     def checkRelation(self, username, movie, relation):
+        s = ""
         if(relation == "seen"):
             newRel = "MATCH (u)-[:seen]->(m) WHERE u.name = $userN AND m.title = $mov RETURN u"
+            s = "seen"
         elif(relation == "watch"):
             newRel = "MATCH (u)-[:watch]->(m) WHERE u.name = $userN AND m.title = $mov RETURN u"
+            s = "watch"
         else:
             return
         
@@ -206,9 +213,9 @@ class movie:
         )
 
         if(records):
-            return True
+            return (True, s)
         else:
-            return False
+            return (False, s)
 
     
     def updateRelation(self, username, movie, relation, rating):
@@ -249,3 +256,13 @@ class movie:
         return "new relation added"
 
 
+    def removeRelation(self, user, movie):
+        newRel = "MATCH (u)-[r:watch]->(m) WHERE u.name = $userN AND m.title = $mov DELETE r"
+        
+        records, summary, keys = self.driver.execute_query(
+            newRel,
+            userN = user,
+            mov = movie,
+            database_="neo4j",
+        )
+        
