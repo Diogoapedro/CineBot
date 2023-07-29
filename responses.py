@@ -43,14 +43,15 @@ def get_response(message: str, movie_db: movie, username: str, restrict = None) 
     # !wl add <name>
     # !wl rm <name>
     if p_message == "!wl" and (len(sp_message) == 2):
-        if(restrict):
-            return "You Don't have permissions for that"
         
         sp = sp_message[1].split(" ", 1)
 
         if(len(sp) == 2 and sp[0] == "add"): 
             movie_db.addNew("watch", username, sp[1])
             return "Movie added to the Watchlist"
+        
+        if(restrict):
+            return "You Don't have permissions for that"
 
         if(len(sp) == 2 and sp[0] == "rm"): 
             movie_db.remove("watch", username, sp[1])

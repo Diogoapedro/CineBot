@@ -30,7 +30,7 @@ class movie:
         return("user created")
  
 
-    def checkUser(self, username) -> dict: # {username, banned}
+    def checkUser(self, username) -> dict: # {username, permission, banned}
         res = dict()
         userInfo = "MATCH (u:user) WHERE u.name = $userN RETURN (u)"
         records, summary, keys = self.driver.execute_query(
@@ -46,6 +46,7 @@ class movie:
 
         records = records[0]
         res["username"] = records["u"].get("name")
+        res["permission"] = records["u"].get("permission")
         res["banned"] = records["u"].get("banned")
 
         return res
